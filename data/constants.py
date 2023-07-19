@@ -1,6 +1,6 @@
 import json
 
-with open('kaggle.json', 'r') as f:
+with open('data/kaggle.json', 'r') as f:
     kaggle_dict = json.load(f)
 
 # kaggle credentials
