@@ -13,6 +13,7 @@ class DownloadData():
         '''
         
         '''
+        self.article_limit = 20
         os.environ['KAGGLE_USERNAME'] = KAGGLE_USERNAME
         os.environ['KAGGLE_KEY'] = KAGGLE_API_KEY
     
@@ -32,8 +33,9 @@ class DownloadData():
         
         '''
         raw_df = pd.read_json(f'data/raw/{ext}', lines=True)
-        df = raw_df[raw_df['category'] == 'BUSINESS']
-        df = df.reset_index(drop=True)
+        filtered_df = raw_df[raw_df['category'] == 'BUSINESS']
+        filtered_df = filtered_df.head(self.article_limit)
+        df = filtered_df.reset_index(drop=True)
 
         train_ratio = 0.7  # Percentage of data for training set
         val_ratio = 0.15  # Percentage of data for validation set
@@ -52,7 +54,11 @@ class DownloadData():
 
         self.dataframes =  {'train': train_df, 'val': val_df, 'test': test_df}
 
-    def download_to_text(self, max_n = 10):
+        self.dataframe_sizes = {'train': train_ratio * self.article_limit, 
+                                'val': val_ratio * self.article_limit,
+                                'test': test_ratio * self.article_limit}
+        
+    def download_to_text(self):
         '''
         
         '''
@@ -70,9 +76,6 @@ class DownloadData():
                 continue
 
             for idx, row in df.iterrows():
-
-                if idx == max_n:
-                    break
 
                 filename = f"{idx:05d}.txt"
 
@@ -102,7 +105,10 @@ class DownloadData():
                 with open(f'{processed_dir}{df_name}/summaries/' + filename, 'w', encoding='utf-8') as file:
                     file.write(summary)
 
-    def get_largest_name_int(self, example_dir = "data/processed/train/text/"):
+    def get_largest_name_int(self, df_type = 'train'):
+
+        example_dir = f"data/processed/{df_type}/text/"
+
         # Get the list of files in the directory
         file_list = os.listdir(example_dir)
 
@@ -120,15 +126,16 @@ class DownloadData():
 
         return largest_name_int
 
-    def move_rename_files(self, max_n = 10):
+    def move_rename_files(self):
         
-        largest_name_int = self.get_largest_name_int()
-
         dir_tuple = [("data/raw/BBC News Summary/News Articles/business", "text"), 
                     ("data/raw/BBC News Summary/Summaries/business", "summaries")]
 
         # Move and rename the files
         for df_name in self.dataframes.keys():
+            
+            largest_name_int = self.get_largest_name_int(df_type = df_name)
+            max_n = self.dataframe_sizes[df_name]
 
             for i in range(len(dir_tuple)):
 
@@ -146,4 +153,4 @@ class DownloadData():
                     target_name = f"{index:05}.txt"
                     target_path = os.path.join(target_directory, target_name)
                     shutil.move(source_path, target_path)
-                    print(f"Moved and renamed {source_path} to {target_path}")
+                    # print(f"Moved and renamed {source_path} to {target_path}")
