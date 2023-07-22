@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 from data.constants import *
 from kaggle.api.kaggle_api_extended import KaggleApi
+import math
 import os
 import pandas as pd
 import requests
@@ -13,7 +14,7 @@ class DownloadData():
         '''
         
         '''
-        self.article_limit = 20
+        self.article_limit = 10
         os.environ['KAGGLE_USERNAME'] = KAGGLE_USERNAME
         os.environ['KAGGLE_KEY'] = KAGGLE_API_KEY
     
@@ -54,9 +55,9 @@ class DownloadData():
 
         self.dataframes =  {'train': train_df, 'val': val_df, 'test': test_df}
 
-        self.dataframe_sizes = {'train': train_ratio * self.article_limit, 
-                                'val': val_ratio * self.article_limit,
-                                'test': test_ratio * self.article_limit}
+        self.dataframe_sizes = {'train': math.ceil(train_ratio * self.article_limit), 
+                                'val': math.ceil(val_ratio * self.article_limit),
+                                'test': math.ceil(test_ratio * self.article_limit)}
         
     def download_to_text(self):
         '''

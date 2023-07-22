@@ -28,7 +28,7 @@ class GenerativeModel():
         '''
         
         '''
-        tokenizer = self.get_tokenizer()
+        tokenizer = self.get_tokenizer(self.checkpoint)
         prefix = "summarize: "
     
         inputs = [prefix + doc for doc in input["text"]]
@@ -58,8 +58,8 @@ class GenerativeModel():
         '''
         
         '''
-        rouge = evaluate.load('rogue')
-        tokenizer = self.get_model(self.checkpoint)
+        rouge = evaluate.load('rouge')
+        tokenizer = self.get_tokenizer(self.checkpoint)
         predictions, labels = eval_pred
         decoded_preds = tokenizer.batch_decode(predictions, skip_special_tokens=True)
         labels = np.where(labels != -100, labels, tokenizer.pad_token_id)
@@ -98,7 +98,7 @@ class GenerativeModel():
         model = self.get_model()
         training_args = self.get_training_args()
         tokenized_train_dataset, tokenized_val_dataset = self.get_tokenized_datasets_train()
-        tokenizer = self.get_tokenizer()
+        tokenizer = self.get_tokenizer(self.checkpoint)
         data_collator = self.get_data_collator(tokenizer=tokenizer)
 
         trainer = Seq2SeqTrainer(
@@ -113,28 +113,42 @@ class GenerativeModel():
 
         return trainer
     
-    def train_model(self, trainer):
+    def train_model(self, trainer, model_save_name, eval_save_name):
         trainer.train()
         self.trainer = trainer
-    
-    def evaluate_model(self, save_name):
-        '''
-        
-        '''
-        evaluate = self.trainer.evaluate()
-        with open(f'evals/{save_name}') as file:
-            json.dump(evaluate, file)
 
-    def save_model(self, model_name):
-        self.trainer.save_model(f'models/{model_name}')
+        evaluate = self.trainer.evaluate()
+
+        self.trainer.save_model(f'models/{model_save_name}')
+
+        with open(f'evals/{eval_save_name}.json', 'w') as file:
+            json.dump(evaluate, file)   
     
     def generate_summary(self, model_name, text):
         '''
         
         '''
         tokenizer = self.get_tokenizer(f'models/{model_name}')
+        model = AutoModelForSeq2SeqLM.from_pretrained(f"models/{model_name}")
         inputs = tokenizer(text, return_tensors="pt").input_ids
-        model = AutoModelForSeq2SeqLM.from_pretrained("models/saved_model")
         outputs = model.generate(inputs, max_new_tokens=100, do_sample=False)
         summary = tokenizer.decode(outputs[0], skip_special_tokens=True)
         return summary
+
+    def test(self, model_name, eval_save_name):
+        '''
+        
+        '''
+        rouge = evaluate.load("rouge")
+        refs = []
+        summaries = []
+
+        for test_data in self.datasets['test']:
+            pred_summary = self.generate_summary(model_name, test_data['text'])
+            refs.append(test_data['summary'])
+            summaries.append(pred_summary)
+
+        rouge_scores = rouge.compute(predictions=summaries, references=refs)
+        
+        with open(f'evals/{eval_save_name}.json', 'w') as file:
+            json.dump(rouge_scores, file)
