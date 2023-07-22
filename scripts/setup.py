@@ -1,3 +1,4 @@
+import os
 from scripts.build_features import BuildFeatures
 from scripts.extractive_model import ExtractiveModel
 from scripts.clear_data import FileDeleter
@@ -5,8 +6,13 @@ from scripts.generative_model import GenerativeModel
 from  scripts.make_dataset import MakeDataset
 
 if __name__ == '__main__':
-    fd = FileDeleter()
-    fd.delete_all_in_directory()
+    # fd = FileDeleter()
+    # fd.delete_all_in_directory()
+
+    if not os.path.exits('data/processed'):
+        os.mkdir('data/processed')
+    if not os.path.exits('data/raw'):
+        os.mkdir('data/raw')
 
     MakeDataset()
 
