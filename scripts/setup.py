@@ -9,9 +9,9 @@ if __name__ == '__main__':
     # fd = FileDeleter()
     # fd.delete_all_in_directory()
 
-    if not os.path.exits('data/processed'):
+    if not os.path.exists('data/processed'):
         os.mkdir('data/processed')
-    if not os.path.exits('data/raw'):
+    if not os.path.exists('data/raw'):
         os.mkdir('data/raw')
 
     MakeDataset()
