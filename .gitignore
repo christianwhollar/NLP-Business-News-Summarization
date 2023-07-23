@@ -1,4 +1,5 @@
 data/processed/
-data/raw/
+data/raw/BBC News Summary
 data/kaggle.json
-models/
+models/bart_model
+models/t5_model

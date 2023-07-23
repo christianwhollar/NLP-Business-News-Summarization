@@ -1,1 +1,1 @@
-{"eval_loss": 3.114021062850952, "eval_rouge1": 0.1935, "eval_rouge2": 0.0, "eval_rougeL": 0.129, "eval_rougeLsum": 0.129, "eval_gen_len": 60.0, "eval_runtime": 8.1953, "eval_samples_per_second": 0.122, "eval_steps_per_second": 0.122, "epoch": 4.0}
+{"eval_loss": 1.0795704126358032, "eval_rouge1": 0.3843, "eval_rouge2": 0.2442, "eval_rougeL": 0.2796, "eval_rougeLsum": 0.2804, "eval_gen_len": 96.1864, "eval_runtime": 18.8404, "eval_samples_per_second": 3.132, "eval_steps_per_second": 0.212, "epoch": 10.0}
