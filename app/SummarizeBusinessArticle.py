@@ -4,6 +4,8 @@ import requests
 import streamlit as st
 from summarizer import GenSummarizer, ExtSummarizer
 
+# Ref Article : https://www.huffpost.com/entry/fedex-startup-conference-west-memphis-three_n_2648977
+
 st.set_page_config(layout='centered')
 
 if 'clicks' not in st.session_state:
@@ -55,19 +57,8 @@ if st.session_state.clicks['download_button']:
     bodytext = [i.text for i in bodytext]
     text = ' '.join(bodytext)
 
-    css = '''
-        <style>
-            .element-container:has(>.stTextArea), .stTextArea {
-                width: 800px !important;
-            }
-            .stTextArea textarea {
-                height: 400px;
-            }
-        </style>
-    '''
     st.subheader(title)
-    textarea = st.write(text)
-    st.write(css, unsafe_allow_html=True)
+    st.write(text)
 
     model = st.radio('Model Selection', options = ['Bart', 'T5', 'TextRank'])
     summarize_button = st.button('Summarize', on_click = click, args = ['summarize_button'])

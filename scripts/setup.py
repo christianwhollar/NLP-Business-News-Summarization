@@ -38,5 +38,5 @@ if __name__ == '__main__':
 
     print('Extractive Model start...')
     em = ExtractiveModel(datasets=datasets)
-    em.test('TextRankScores')
+    em.test('textrank_test_eval')
     print('Extractive Model Complete!')
