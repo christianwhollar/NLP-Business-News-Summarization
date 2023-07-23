@@ -1,3 +1,4 @@
+data/processed/
 data/raw/BBC News Summary
 data/kaggle.json
 models/bart_model/pytorch_model.bin
