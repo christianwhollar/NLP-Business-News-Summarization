@@ -19,7 +19,7 @@ if __name__ == '__main__':
     bf = BuildFeatures()
     datasets = bf.get_datasets()
 
-    int_setting = 0
+    int_setting = 1
     pt_model_options = ["t5-small", "sshleifer/distilbart-cnn-12-6"]
     pt_model_name = pt_model_options[int_setting]
 
