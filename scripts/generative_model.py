@@ -80,11 +80,11 @@ class GenerativeModel():
             output_dir="models/my_model",
             evaluation_strategy="epoch",
             learning_rate=2e-5,
-            per_device_train_batch_size=5,
-            per_device_eval_batch_size=5,
+            per_device_train_batch_size=16,
+            per_device_eval_batch_size=16,
             weight_decay=0.01,
             save_total_limit=3,
-            num_train_epochs=4,
+            num_train_epochs=10,
             predict_with_generate=True,
         )
 
