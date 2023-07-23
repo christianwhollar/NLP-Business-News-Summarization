@@ -8,6 +8,7 @@ from summarizer import GenSummarizer, ExtSummarizer
 
 st.set_page_config(layout='centered')
 
+# Session State
 if 'clicks' not in st.session_state:
     st.session_state['clicks'] = {}
     st.session_state.clicks['download_button'] = False
@@ -28,6 +29,7 @@ url_mode = st.select_slider(label = '', options = ['Custom URL', 'Trial URLs'])
 col1, col2 = st.columns([4, 1])
 
 with col1:
+    # URL moding
     if url_mode == 'Custom URL':
         url = st.text_input('Type URL:')
 
@@ -45,7 +47,7 @@ with col2:
     st.markdown('')
     download_button = st.button('Download Article', on_click = click, args = ['download_button'])
 
-if st.session_state.clicks['download_button']:
+if st.session_state.clicks['download_button']: # Download article title, body
     page = requests.get(url)
     soup = BeautifulSoup(page.content, 'html.parser')
 
@@ -60,12 +62,12 @@ if st.session_state.clicks['download_button']:
     st.subheader(title)
     st.write(text)
 
-    model = st.radio('Model Selection', options = ['Bart', 'T5', 'TextRank'])
+    model = st.radio('Model Selection', options = ['Bart', 'T5', 'TextRank']) # Choose model type
     summarize_button = st.button('Summarize', on_click = click, args = ['summarize_button'])
 
 if st.session_state.clicks['summarize_button']:
     
-    if model == 'Bart':
+    if model == 'Bart': # Generate article summary using DistilBart
         st.subheader('Bart Summary')
 
         gsm = GenSummarizer()
@@ -81,7 +83,7 @@ if st.session_state.clicks['summarize_button']:
             if any(char.isalpha() for char in sentence):
                 st.markdown(f'-{sentence}')
 
-    if model == 'T5':
+    if model == 'T5': # Generate article summary using Google T5
         st.subheader('T5 Summary')
 
         gsm = GenSummarizer()
@@ -97,7 +99,7 @@ if st.session_state.clicks['summarize_button']:
             if any(char.isalpha() for char in sentence):
                 st.markdown(f'-{sentence}')
 
-    if model == 'TextRank':
+    if model == 'TextRank': # Extract article summary using TextRank
         st.subheader('TextRank Summary')
         esm = ExtSummarizer()
 

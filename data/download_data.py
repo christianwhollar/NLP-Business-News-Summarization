@@ -9,10 +9,20 @@ import shutil
 from sklearn.model_selection import train_test_split
 
 class DownloadData():
-    
+    '''
+    A class for downloading, processing, and organizing text and summary data from Kaggle datasets.
+
+    Methods:
+        __init__(self): Initializes the DownloadData class and sets Kaggle API authentication.
+        download_kaggle(self, DATASET_NAMES, PATH_NAME): Downloads Kaggle datasets and unzips them.
+        json_to_df(self, ext='News_Category_Dataset_v3.json'): Converts JSON data to a DataFrame and splits it into train, validation, and test sets.
+        download_to_text(self): Downloads text and summary data from the internet and saves it as individual files.
+        get_largest_name_int(self, df_type='train'): Retrieves the largest filename integer in the specified directory.
+        move_rename_files(self): Moves and renames the downloaded files to maintain consecutive numbering.
+    '''
     def __init__(self):
         '''
-        
+        Initializes the DownloadData class and sets Kaggle API authentication.
         '''
         self.article_limit = 200
         os.environ['KAGGLE_USERNAME'] = KAGGLE_USERNAME
@@ -20,7 +30,11 @@ class DownloadData():
     
     def download_kaggle(self, DATASET_NAMES = ['pariza/bbc-news-summary','rmisra/news-category-dataset'], PATH_NAME = './data/raw/'):
         '''
-        
+        Downloads Kaggle datasets and unzips them.
+
+        Args:
+            DATASET_NAMES (list): List of Kaggle dataset names to download.
+            PATH_NAME (str): Path to the directory where the datasets will be saved.
         '''
         api = KaggleApi()
         api.authenticate()
@@ -31,7 +45,17 @@ class DownloadData():
     
     def json_to_df(self, ext = 'News_Category_Dataset_v3.json'):
         '''
-        
+        Converts JSON data to a DataFrame and splits it into train, validation, and test sets.
+
+        Args:
+            ext (str): Filename extension of the JSON file to convert.
+
+        Notes:
+            The method uses the 'BUSINESS' category and a specified article limit for processing.
+
+        Example:
+            downloader = DownloadData()
+            downloader.json_to_df('News_Category_Dataset_v3.json')
         '''
         raw_df = pd.read_json(f'data/raw/{ext}', lines=True)
         filtered_df = raw_df[raw_df['category'] == 'BUSINESS']
@@ -61,7 +85,14 @@ class DownloadData():
         
     def download_to_text(self):
         '''
-        
+        Downloads text and summary data from the internet and saves it as individual files.
+
+        Notes:
+            The method processes the data for each set (train, validation, and test) and saves them in the 'data/processed/' directory.
+
+        Example:
+            downloader = DownloadData()
+            downloader.download_to_text()
         '''
         processed_dir = 'data/processed/'
 
@@ -107,7 +138,15 @@ class DownloadData():
                     file.write(summary)
 
     def get_largest_name_int(self, df_type = 'train'):
+        '''
+        Retrieves the largest filename integer in the specified directory.
 
+        Args:
+            df_type (str): Type of the DataFrame ('train', 'val', or 'test').
+
+        Returns:
+            int: The largest integer found in the filenames of the specified directory.
+        '''
         example_dir = f"data/processed/{df_type}/text/"
 
         # Get the list of files in the directory
@@ -128,7 +167,13 @@ class DownloadData():
         return largest_name_int
 
     def move_rename_files(self):
-        
+        '''
+        Moves and renames the downloaded files to maintain consecutive numbering.
+
+        Notes:
+            The method moves the downloaded text and summary files to the 'data/processed/' directory,
+            and renames them with consecutive integers for easier organization.
+        '''
         dir_tuple = [("data/raw/BBC News Summary/News Articles/business", "text"), 
                     ("data/raw/BBC News Summary/Summaries/business", "summaries")]
 

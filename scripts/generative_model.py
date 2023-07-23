@@ -5,29 +5,88 @@ from transformers import AutoModelForSeq2SeqLM, AutoTokenizer, DataCollatorForSe
 
 class GenerativeModel():
     '''
-    
-    '''
+    A class representing a Generative Model for text summarization using HuggingFace's Transformers.
 
+    Attributes:
+        datasets (Dataset): HuggingFace datasets containing train, val, and test data.
+        checkpoint (str): Name of the pre-trained model used for summarization.
+
+    Methods:
+        __init__(self, datasets, model_name="t5-small"): Initializes the GenerativeModel with datasets and model_name.
+        get_tokenizer(self, name): Returns the tokenizer for the specified pre-trained model.
+        get_model(self): Returns the Seq2SeqLM model for text summarization.
+        get_data_collator(self, tokenizer): Returns the data collator for Seq2Seq models.
+        preprocess_function(self, input): Preprocesses the input data for training the model.
+        get_tokenized_datasets_train(self): Returns tokenized training and validation datasets.
+        get_tokenized_datasets_test(self): Returns tokenized test dataset.
+        compute_metrics(self, eval_pred): Computes evaluation metrics (ROUGE) for model performance.
+        get_training_args(output_dir="models/generative"): Returns training arguments for the model.
+        get_trainer(self): Returns the Seq2SeqTrainer for training the model.
+        train_model(self, trainer, model_save_name, eval_save_name): Trains the model and saves the results.
+        generate_summary(self, model_name, text): Generates a summary for the given input text.
+        test(self, model_name, eval_save_name): Performs model testing and saves evaluation results.
+    '''
+    
     def __init__(self, datasets, model_name = "t5-small"):
+        '''
+        Returns the tokenizer for the specified pre-trained model.
+
+        Args:
+            name (str): Name of the pre-trained model.
+
+        Returns:
+            tokenizer: The tokenizer for the specified model.
+        '''
         self.datasets = datasets
         self.checkpoint = model_name
 
     def get_tokenizer(self, name):
+        '''
+        Returns the tokenizer for the specified pre-trained model.
+
+        Args:
+            name (str): Name of the pre-trained model.
+
+        Returns:
+            tokenizer: The tokenizer for the specified model.
+        '''
         tokenizer = AutoTokenizer.from_pretrained(name)
         return tokenizer
 
     def get_model(self):
+        '''
+        Returns the Seq2SeqLM model for text summarization.
+
+        Returns:
+            model: The Seq2SeqLM model.
+        '''
         model = AutoModelForSeq2SeqLM.from_pretrained(self.checkpoint)
         return model
     
     def get_data_collator(self, tokenizer):
+        '''
+        Returns the data collator for Seq2Seq models.
+
+        Args:
+            tokenizer: The tokenizer for the specified model.
+
+        Returns:
+            data_collator: The data collator for Seq2Seq models.
+        '''
         data_collator = DataCollatorForSeq2Seq(tokenizer = tokenizer, model = self.checkpoint)
         return data_collator
     
     def preprocess_function(self, input):
         '''
-        
+        Preprocesses the input data for training the model.
+
+        Args:
+            input: The input data containing text and summary.
+
+        Returns:
+            model_inputs: Preprocessed data as model inputs.
         '''
+
         tokenizer = self.get_tokenizer(self.checkpoint)
         prefix = "summarize: "
     
@@ -41,7 +100,10 @@ class GenerativeModel():
 
     def get_tokenized_datasets_train(self):
         '''
-        
+        Returns tokenized training and validation datasets.
+
+        Returns:
+            tokenized_train_datasets, tokenized_val_datasets: A tuple containing tokenized training and validation datasets.
         '''
         tokenized_train_datasets = self.datasets['train'].map(self.preprocess_function, batched=True)
         tokenized_val_datasets = self.datasets['val'].map(self.preprocess_function, batched=True)
@@ -49,14 +111,23 @@ class GenerativeModel():
     
     def get_tokenized_datasets_test(self):
         '''
+        Returns tokenized test dataset.
 
+        Returns:
+            tokenized_test_datasets: Tokenized test dataset.
         '''
         tokenized_test_datasets = self.datasets['test'].map(self.preprocess_function, batched=True)
         return tokenized_test_datasets
     
     def compute_metrics(self, eval_pred):
         '''
-        
+        Computes evaluation metrics (ROUGE) for model performance.
+
+        Args:
+            eval_pred: The evaluation predictions.
+
+        Returns:
+            dict: A dictionary containing computed evaluation metrics.
         '''
         rouge = evaluate.load('rouge')
         tokenizer = self.get_tokenizer(self.checkpoint)
@@ -74,7 +145,13 @@ class GenerativeModel():
     
     def get_training_args(output_dir = "models/generative"):
         '''
-        
+        Returns training arguments for the model.
+
+        Args:
+            output_dir (str): Directory to save the model to during training.
+
+        Returns:
+           training_args (Seq2SeqTrainingArguments): Training arguments for the model.
         '''
         training_args = Seq2SeqTrainingArguments(
             output_dir="models/my_model",
@@ -93,9 +170,11 @@ class GenerativeModel():
     
     def get_trainer(self):
         '''
-        
-        '''
+        Returns the Seq2SeqTrainer for training the model.
 
+        Returns:
+            trainer (Seq2SeqTrainer): The trainer for the Seq2Seq model.
+        '''
         model = self.get_model()
         training_args = self.get_training_args()
         tokenized_train_dataset, tokenized_val_dataset = self.get_tokenized_datasets_train()
@@ -115,6 +194,14 @@ class GenerativeModel():
         return trainer
     
     def train_model(self, trainer, model_save_name, eval_save_name):
+        '''
+        Trains the model and saves the results.
+
+        Args:
+            trainer (Seq2SeqTrainer): The trainer for the Seq2Seq model.
+            model_save_name (str): Name to save model file as.
+            eval_save_name (str): Name to save evaluation file as.
+        '''
         trainer.train()
         self.trainer = trainer
 
@@ -127,7 +214,14 @@ class GenerativeModel():
     
     def generate_summary(self, model_name, text):
         '''
-        
+        Generates a summary for the given input text.
+
+        Args:
+            model_name (str): Name of the pre-trained model to use.
+            text (str): Input text for summarization.
+
+        Returns:
+            summary(str): The generated summary.
         '''
         tokenizer = self.get_tokenizer(f'models/{model_name}')
         model = AutoModelForSeq2SeqLM.from_pretrained(f"models/{model_name}")
@@ -138,7 +232,11 @@ class GenerativeModel():
 
     def test(self, model_name, eval_save_name):
         '''
-        
+        Performs model testing and saves evaluation results.
+
+        Args:
+            model_name (str): Name of the pre-trained model to use for testing.
+            eval_save_name (str): Name to evaluation file as.
         '''
         rouge = evaluate.load("rouge")
         refs = []

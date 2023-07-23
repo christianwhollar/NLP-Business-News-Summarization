@@ -9,20 +9,54 @@ import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 class ExtractiveModel():
+    '''
+    A class representing an Extractive Text Summarization Model using cosine similarity and PageRank.
+
+    Attributes:
+        test_set (Dataset): The test dataset used for evaluation.
+
+    Methods:
+        __init__(self, datasets): Initializes the ExtractiveModel with the test dataset.
+        get_sentences(self, article): Tokenizes the input article into sentences.
+        preprocess(self, extracted_sentences): Preprocesses the extracted sentences.
+        vectorize(self, processed_sents, vectorizer_type='count'): Vectorizes the preprocessed sentences.
+        generate_adjacency_matrix(self, feature_vecs): Generates the adjacency matrix based on the similarity of sentences.
+        summarize(self, sentences, adjacency_matrix, top_n): Generates the summary by applying PageRank algorithm.
+        test(self, save_name): Tests the model and saves evaluation results.
+    '''
+    
     def __init__(self, datasets):
+        '''
+        Initializes the ExtractiveModel with the test dataset.
+
+        Args:
+            datasets: HuggingFace dataset containing 'test' dataset.
+        '''
         nltk.download('popular')
         self.test_set = datasets['test']
 
     def get_sentences(self, article):
         '''
-        
+        Tokenizes the input article into sentences.
+
+        Args:
+            article (str): The input article to be tokenized.
+
+        Returns:
+            list: A list of sentences extracted from the article.
         '''
         article_sentences = sent_tokenize(article)
         return article_sentences
     
     def preprocess(self, extracted_sentences):
         '''
-        
+        Preprocesses the extracted sentences.
+
+        Args:
+            extracted_sentences (list): A list of extracted sentences.
+
+        Returns:
+            list: A list of preprocessed sentences.
         '''
         sents_processed = []
         for sentence in extracted_sentences:
@@ -34,7 +68,14 @@ class ExtractiveModel():
 
     def vectorize(self, processed_sents, vectorizer_type='count'):
         '''
-        
+        Vectorizes the preprocessed sentences.
+
+        Args:
+            processed_sents (list): A list of preprocessed sentences.
+            vectorizer_type (str): The type of vectorizer to use ('count' or 'tfidf').
+
+        Returns:
+            list: A list of feature vectors for each sentence.
         '''
         if vectorizer_type == 'count':
             # Get vocabulary for entire document
@@ -57,8 +98,15 @@ class ExtractiveModel():
     
     def generate_adjacency_matrix(self, feature_vecs):
         '''
-        
+        Generates the adjacency matrix based on the similarity of sentences.
+
+        Args:
+            feature_vecs: feature vectors for each sentence.
+
+        Returns:
+            adjacency_matrix: The adjacency matrix representing sentence similarity.
         '''
+
         # Create empty adjacency matrix
         adjacency_matrix = np.zeros((len(feature_vecs), len(feature_vecs)))
     
@@ -73,8 +121,17 @@ class ExtractiveModel():
     
     def summarize(self, sentences, adjacency_matrix, top_n):
         '''
-        
+        Generates the summary by applying PageRank algorithm.
+
+        Args:
+            sentences (list): A list of sentences in the article.
+            adjacency_matrix (numpy.ndarray): The adjacency matrix representing sentence similarity.
+            top_n (int): The number of top sentences to include in the summary.
+
+        Returns:
+            str: The generated summary.
         '''
+
         # Create the graph representing the document
         document_graph = nx.from_numpy_array(adjacency_matrix)
 
@@ -96,8 +153,12 @@ class ExtractiveModel():
     
     def test(self, save_name):
         '''
-        
+        Tests the model and saves evaluation results.
+
+        Args:
+            save_name (str): Name of the evaluation file to save.
         '''
+
         rouge = evaluate.load("rouge")
         refs = []
         summaries = []

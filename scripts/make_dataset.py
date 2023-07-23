@@ -2,10 +2,14 @@ from data.download_data import *
 import os
 
 class MakeDataset():
-
+    '''
+    MakeDataset Class for scripts/setup.py
+    '''
     def __init__(self):
         '''
-        
+        Setup DownloadData class for Kaggle Dataset dowwnload
+        Args:
+            None
         '''
         self.dd = DownloadData()
         self.execute_download()
@@ -14,7 +18,11 @@ class MakeDataset():
 
     def execute_download(self):
         '''
-        
+        Call DownloadData to download Kaggle Datasets
+        Args:
+            None
+        Returns:
+            None
         '''
         print('Beginning download...')
         self.dd.download_kaggle()
@@ -22,7 +30,11 @@ class MakeDataset():
 
     def gen_dataframes(self):   
         '''
-        
+        Call DownloadData to create pd.DataFrame for .json storage
+        Args:
+            None
+        Returns:
+            None
         '''
         if not hasattr(self.dd, 'dataframes'):
             self.dd.json_to_df()
@@ -30,7 +42,12 @@ class MakeDataset():
     
     def gen_proc_dir(self):
         '''
-        
+        Call DownloadData for URL scrape 
+        Convert to .txt and move to /data/processed
+        Args:
+            None
+        Returns:
+            None
         '''
         if not os.listdir('data/processed/'):
             print('Downloading articles...')
