@@ -1,6 +1,7 @@
 import evaluate
 import json
 import networkx as nx
+import nltk
 from nltk import sent_tokenize
 from nltk.corpus import stopwords
 from nltk.cluster.util import cosine_distance
@@ -9,6 +10,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 class ExtractiveModel():
     def __init__(self, datasets):
+        nltk.download('popular')
         self.test_set = datasets['test']
 
     def get_sentences(self, article):
