@@ -86,6 +86,7 @@ class GenerativeModel():
             save_total_limit=3,
             num_train_epochs=10,
             predict_with_generate=True,
+            fp16=True
         )
 
         return training_args
