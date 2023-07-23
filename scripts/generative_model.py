@@ -131,7 +131,7 @@ class GenerativeModel():
         '''
         tokenizer = self.get_tokenizer(f'models/{model_name}')
         model = AutoModelForSeq2SeqLM.from_pretrained(f"models/{model_name}")
-        inputs = tokenizer(text, return_tensors="pt").input_ids
+        inputs = tokenizer(text, return_tensors="pt", truncation=True, padding= "max_length").input_ids
         outputs = model.generate(inputs, max_new_tokens=100, do_sample=False)
         summary = tokenizer.decode(outputs[0], skip_special_tokens=True)
         return summary
