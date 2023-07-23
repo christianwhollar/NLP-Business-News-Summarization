@@ -14,7 +14,7 @@ class DownloadData():
         '''
         
         '''
-        self.article_limit = 50
+        self.article_limit = 200
         os.environ['KAGGLE_USERNAME'] = KAGGLE_USERNAME
         os.environ['KAGGLE_KEY'] = KAGGLE_API_KEY
     

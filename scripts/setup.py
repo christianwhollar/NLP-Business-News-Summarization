@@ -29,11 +29,14 @@ if __name__ == '__main__':
     model_save_name = f'{abv_name}_model'
     train_eval_save_name = f'{abv_name}_train_eval'
     test_eval_save_name = f'{abv_name}_test_eval'
-
+    print('Generative Model Training...')
     gm = GenerativeModel(datasets = datasets, model_name = pt_model_name)
     trainer = gm.get_trainer()
     gm.train_model(trainer, model_save_name = model_save_name, eval_save_name = train_eval_save_name)
     gm.test(model_name = model_save_name, eval_save_name = test_eval_save_name)
+    print('Generative Model Complete!')
 
+    print('Extractive Model start...')
     em = ExtractiveModel(datasets=datasets)
     em.test('TextRankScores')
+    print('Extractive Model Complete!')
